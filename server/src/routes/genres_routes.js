@@ -1,9 +1,9 @@
-import { Router } from 'express'
-import { GENRES } from '../paths'
-import { getGenres } from '../controllers/genres_controller'
-const router = Router()
+import { Router } from 'express';
+import { GENRES } from '../paths.js';
+import { getGenres } from '../controllers/genres_controller.js';
+const router = Router();
 
 
-router.get(GENRES, getGenres)
+router.get(GENRES, getGenres);
 
-export default router
+export default router;

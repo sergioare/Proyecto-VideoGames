@@ -1,9 +1,9 @@
-import { DataTypes, Model } from 'sequelize'
-import {sequelize} from '../db/db.js'
-import {Videogame} from './Videogameprueba.js'
+import { DataTypes, Model } from 'sequelize';
+import {sequelize} from '../db/db.js';
+import {Videogame} from './Videogame.js';
 // Define the model (Genre) to initialized in our DB "VideoGames"
 
-export const Genre = sequelize.define('genre',{
+export const Genre = sequelize.define('genres',{
 
   id: {
     type: DataTypes.INTEGER,
@@ -16,10 +16,10 @@ export const Genre = sequelize.define('genre',{
   }
   }
 
-)
+);
     
   
         
 
-Videogame.belongsToMany(Genre, {through: 'videogame_genre'})
-Genre.belongsToMany(Videogame, {through: 'videogame_genre'})
+Videogame.belongsToMany(Genre, {through: 'videogame_genre'});
+Genre.belongsToMany(Videogame, {through: 'videogame_genre'});

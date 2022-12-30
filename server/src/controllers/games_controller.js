@@ -1,8 +1,8 @@
 import axios from 'axios'
 import express  from 'express'
-import { Genre } from '../models/Genre'
-import { Videogame } from '../models/Videogameprueba'
-import {getApiAndDBGames} from './dbAPI'
+import { Genre } from '../models/Genre.js'
+import { Videogame } from '../models/Videogame.js'
+import {getApiAndDBGames, putGame, GameById} from './dbAPI.js'
 const {API_KEY} = process.env
 
 async function getAllVideogames(req, res) {
@@ -26,14 +26,6 @@ async function getAllVideogames(req, res) {
     }
 }
 
-// const getGamesBySlice = async (req, res)=>{
-//     try {
-        
-//     } catch (error) {
-//         res.status(500).json({message: error.message})
-        
-//     }
-// }
 const getGameById = async (req, res)=>{
     try {
        const {id} = req.params
@@ -79,21 +71,43 @@ const createGame = async (req, res)=>{
         newVideogame.addGenres(genreDB)
         res.status(200).send('Videogame was created successfully')
     } catch (error) {
-        res.status(500).json({message: error.message})
+        return {error: error.message}
         
     }
 }
 const updateGame = async (req, res)=>{
+    const {id} =req.params
+    const{name,
+        description,
+        rating,
+        platforms,
+        genre,
+        image,
+        released
+    }= req.body
     try {
-        
+        const game = await putGame(id, name,description, rating, platforms, genre, image, released)
+        if(game){
+            res.status(200).json(game)
+        }else{
+            return res.status(404).json({ message: 'Videogame not found' })
+        }
+
     } catch (error) {
         res.status(500).json({message: error.message})
         
     }
 }
 const deleteGame = async (req, res)=>{
+    const {id} = req.params
     try {
-        
+      const game = await GameById(id)
+      if(game){
+        await game.destroy()
+        return res.status(200).send('Videogame was removed correctly')
+      }else{
+        return res.status(404).json({ message: 'Videogame not found' })
+      }
     } catch (error) {
         res.status(500).json({message: error.message})
         
@@ -101,7 +115,6 @@ const deleteGame = async (req, res)=>{
 }
 export {
     getAllVideogames,
-    getGamesBySlice,
     getGameById,
     createGame,
     updateGame,
