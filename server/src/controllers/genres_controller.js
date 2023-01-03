@@ -5,17 +5,18 @@ import axios from "axios"
 const {API_KEY} = process.env
 
  export const getGenres = async (req, res)=>{
-    // try {
+    try {
+      
         const genreAPI = await axios.get(`https://api.rawg.io/api/genres?key=${API_KEY}`);
         const genresNames = genreAPI.data.results;
 
-        genresNames.forEach(async element => {
+        genresNames.forEach(async (element) => {
             await Genre.findOrCreate({
                 where: {
                     name: element.name
                 }
             })
-        })
+        });
 
         const allGenres = await Genre.findAll();
         res.status(200).json(allGenres)
@@ -31,8 +32,8 @@ const {API_KEY} = process.env
     //                 })
     //             }
     //         })
-    // } catch (error) {
-    //     res.status(500).json({message: error.message});
-    // }
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
 };
 
