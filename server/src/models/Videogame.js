@@ -4,7 +4,7 @@ import {sequelize} from '../db/db.js';
 
 
 
-export const Videogame = sequelize.define('videogames',{
+export const Videogame = sequelize.define('videogame',{
    
            
         id: {

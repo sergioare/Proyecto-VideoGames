@@ -1,49 +1,53 @@
-import axios from 'axios'
-import express  from 'express'
-import { Genre } from '../models/Genre.js'
-import { Videogame } from '../models/Videogame.js'
-import {getApiAndDBGames, putGame, GameById} from './dbAPI.js'
-const {API_KEY} = process.env
+import axios from 'axios';
+import express from 'express';
+import { Genre } from '../models/Genre.js';
+import { Videogame } from '../models/Videogame.js';
+import {
+    getApiAndDBGames, 
+    putGame, 
+    GameById} from './dbAPI.js';
+const {API_KEY} = process.env;
 
-async function getAllVideogames(req, res) {
+export const getAllVideogames = async (req, res) => {
+    const { name } = req.query;
     try {
-        const { name } = req.query
-        const allinfo = await getApiAndDBGames()
+        const allinfo = await getApiAndDBGames();
 
         if (name) {
-            const getByName = allinfo.filter(element => {
+            const getByName = allinfo.filter((element) => {
                 element.name.toLowerCase().includes(name.toLowerCase())
-            })
+            });
             getByName.length
                 ? res.status(200).json(getByName.splice(0, 14))
-                : res.status(404).json({ message: 'VideoGame Not Found' })
+                : res.status(404).json({ message: 'VideoGame Not Found' });
         } else {
-            res.status(200).json(allinfo)
+            res.status(200).json(allinfo);
         }
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ message: error.message });
 
     }
 }
 
-const getGameById = async (req, res)=>{
+export const getGameById = async (req, res)=>{
+    const {id} = req.params
     try {
-       const {id} = req.params
        if(id.includes("-")){
         const gameInDB = await Videogame.findOne({
             where: {id},
-            include: [Genre]
-        })
-        return res.json(gameInDB)
+            include: [Genre],
+        });
+        return res.json(gameInDB);
        }
-       const  gameFromAPI = await axios.get(`https://api.rawg.io/api/games/${id}?key=${API_KEY}`)
-       res.json(gameFromAPI.data)
+       const  gameFromAPI = await axios.get(`https://api.rawg.io/api/games/${id}?key=${API_KEY}`);
+       res.json(gameFromAPI.data);
     } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({message: "Id not found"});
         
     }
-}
-const createGame = async (req, res)=>{
+};
+
+export const createGame = async (req, res)=>{
     try {
         let{
             name,
@@ -61,22 +65,22 @@ const createGame = async (req, res)=>{
             released,
             rating: rating || 3,
             platforms,
-            image
-        })
+            image,
+        });
 
         let genreDB= await Genre.findAll({
-            where: {name: genre}
-        })
+            where: {name: genre},
+        });
 
-        newVideogame.addGenres(genreDB)
-        res.status(200).send('Videogame was created successfully')
+        newVideogame.addGenres(genreDB);
+        res.status(200).send('Videogame was created successfully');
     } catch (error) {
-        return {error: error.message}
+        res.status(400).send({ error: error.message });
         
     }
 }
-const updateGame = async (req, res)=>{
-    const {id} =req.params
+export const updateGame = async (req, res)=>{
+    const {id} =req.params;
     const{name,
         description,
         rating,
@@ -84,39 +88,32 @@ const updateGame = async (req, res)=>{
         genre,
         image,
         released
-    }= req.body
+    }= req.body;
     try {
         const game = await putGame(id, name,description, rating, platforms, genre, image, released)
         if(game){
-            res.status(200).json(game)
+            res.status(200).json(game);
         }else{
-            return res.status(404).json({ message: 'Videogame not found' })
+            return res.status(404).json({ message: 'Videogame not found' });
         }
 
     } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({message: error.message});
         
     }
 }
-const deleteGame = async (req, res)=>{
-    const {id} = req.params
+export const deleteGame = async (req, res)=>{
+    const {id} = req.params;
     try {
-      const game = await GameById(id)
+      const game = await GameById(id);
       if(game){
-        await game.destroy()
-        return res.status(200).send('Videogame was removed correctly')
+        await game.destroy();
+        return res.status(200).send('Videogame was removed correctly');
       }else{
-        return res.status(404).json({ message: 'Videogame not found' })
+        return res.status(404).json({ message: 'Videogame not found' });
       }
     } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({message: error.message});
         
     }
-}
-export {
-    getAllVideogames,
-    getGameById,
-    createGame,
-    updateGame,
-    deleteGame
 }

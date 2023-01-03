@@ -6,7 +6,7 @@ const key = process.env.API_KEY;
 
 const getApiVideogames = async ()=>{
     try {
-        const firstPage = await axios.get(`https://api.rawg.io/api/games?key=${key}`);
+        const firstPage = await axios.get(`https://api.rawg.io/api/games?key=${key}&page=1`);
 
         // const nextPage = await axios.get(firstPage.data.next)
 
@@ -25,7 +25,7 @@ const getApiVideogames = async ()=>{
         );
 
         // const infoVideogames = await Promise.all(allGames.map(async(videogame)=>{
-            let infoVideogames = apiGames.map(videogame =>{
+            let infoVideogames = apiGames.map((videogame) =>{
                 
                 return {
                     id:videogame.id,
@@ -44,12 +44,12 @@ const getApiVideogames = async ()=>{
         return error.message;
     }
     
-}
+};
 
 const getDbGames = async ()=>{
     try {
-        const dbIncludesGame = await  Videogame.findAll({
-            include:[Genre]
+        return await  Videogame.findAll({
+            include:[Genre],
             // attributes:['name']
         });
         
@@ -70,7 +70,7 @@ const getDbGames = async ()=>{
         
     }
      
-}
+};
 
 export const putGame = async(
     name,
@@ -98,14 +98,14 @@ export const putGame = async(
                         name:genre}
                 })
 
-                await game.setGenres([])
-                res.status(200).send('Videogame was successfully changed')
+                await game.setGenres([]);
+                res.status(200).send('Videogame was successfully changed');
             }
             return { error: 'Videogame not found' };
         } catch (error) {
             return { error: error.message };
         }
-    }
+    };
 
     export const GameById = async(id)=>{
         try {
@@ -144,11 +144,12 @@ export const putGame = async(
         } catch (error) {
             return error.message;
         }
-    }
+    };
+
     export const getApiAndDBGames = async ()=>{
-    const apiInfo = await getApiVideogames()
-    const dbInfo= await getDbGames()
-    const totalInfo = apiInfo.concat(dbInfo)
+    const apiInfo = await getApiVideogames();
+    const dbInfo= await getDbGames();
+    const totalInfo = apiInfo.concat(dbInfo);
     return totalInfo;
-}
+};
 

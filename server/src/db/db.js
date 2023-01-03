@@ -11,6 +11,7 @@ export const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${D
   native: false, 
 })
 
+
 export const seqConn = async ()=>{
   try {
     sequelize
@@ -21,6 +22,9 @@ export const seqConn = async ()=>{
     console.log("Authenticate has not been succesfull", error)
   }
 }
+
+
+
 
 // import Videogame from "../src/models/Videogame"
 // import Genre from "../src/models/Genre"

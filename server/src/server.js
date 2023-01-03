@@ -12,7 +12,7 @@ import "./models/Genre.js";
 const server = express();
 
 server.use(cors());
-server.use(morgan('combined'));
+server.use(morgan('dev'));
 server.use(express.json());
 server.use(cookieParser());
 
